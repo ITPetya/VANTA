@@ -1,0 +1,49 @@
+# Zugangsdaten und Schlüssel
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p8
+*.p12
+secrets/
+config/
+*.local.xcconfig
+
+# Daten, Backups, Logs
+data/
+backups/
+*.sql
+*.dump
+*.sqlite
+*.db
+logs/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Modelle und Embeddings
+models/
+*.pkl
+*.joblib
+
+# Xcode / Swift
+app/**/xcuserdata/
+app/**/DerivedData/
+*.xcuserstate
+.build/
+.swiftpm/
+
+# System und Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

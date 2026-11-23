@@ -65,6 +65,8 @@ vanta/
 ├── app/                 # iOS-App (Swift / SwiftUI)
 ├── deploy/              # Docker Compose, Konfiguration
 ├── docs/                # weiterführende Dokumentation
+├── config.example/      # Vorlagen für die private Konfiguration
+├── LICENSE
 ├── README.md
 ├── ROADMAP.md
 ├── CHANGELOG.md
@@ -79,10 +81,12 @@ vanta/
 | Server | Python, FastAPI |
 | Datenbank | PostgreSQL mit TimescaleDB und pgvector |
 | Sprachmodell | externe API mit Batch-Modus und Prompt Caching |
-| App | Swift, SwiftUI, HealthKit, DeviceActivity |
-| Push | Apple Push Notification Service |
-| Betrieb | Docker Compose, Tailscale |
-| Überwachung | Uptime Kuma |
+| App | Swift, SwiftUI, HealthKit, DeviceActivity, Build über GitHub Actions |
+| Benachrichtigungen | Lokale Benachrichtigungen der App, später Apple Push |
+| Server | eigener Mini-PC, Debian minimal, Docker Compose |
+| Verbindung App und Server | Cloudflare Tunnel, Geräte-Authentifizierung, strenge Schemas |
+| Verwaltung | Tailscale (nicht öffentlich) |
+| Überwachung | eigener Status-Endpunkt, Anzeige in der App, Uptime Kuma von außen |
 
 ## Einrichtung
 
@@ -103,9 +107,15 @@ docker compose -f deploy/docker-compose.yml up -d
 | [CHANGELOG.md](CHANGELOG.md) | Änderungen pro Version |
 | [SECURITY.md](SECURITY.md) | Umgang mit sensiblen Daten und Zugangsdaten |
 
-## Datenschutz
+## Open Source, private Daten
 
-VANTA verarbeitet sehr persönliche Daten, darunter Gesundheitsdaten, Mails und Nutzungsverhalten. Das System ist für den Betrieb auf eigener Hardware und für einen einzelnen Nutzer ausgelegt. Zugangsdaten und echte Daten gehören niemals ins Repository.
+Der Code von VANTA ist öffentlich. Privat bleiben alle Daten, Zugangsdaten, Schlüssel, Verbindungen und die persönliche Konfiguration (Wichtig-Liste, Nachrichtenquellen, Schwellwerte). Nichts davon steht im Quellcode. Im Repository liegen nur Vorlagen wie `.env.example` und `config.example/`.
+
+VANTA verarbeitet sehr persönliche Daten, darunter Gesundheitsdaten, Mails und Nutzungsverhalten. Das System ist für den Betrieb auf eigener Hardware und für einen einzelnen Nutzer ausgelegt. Details stehen in [SECURITY.md](SECURITY.md).
+
+## Lizenz
+
+VANTA steht unter der [GNU Affero General Public License v3.0](LICENSE). Wer VANTA verändert und als Dienst für andere betreibt, muss den veränderten Quellcode ebenfalls offenlegen.
 
 ## Autor
 
