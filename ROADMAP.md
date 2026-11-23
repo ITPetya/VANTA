@@ -98,19 +98,24 @@ flowchart LR
 | **Zustellplaner** | Entscheidet Zeitpunkt, Kanal (Push oder stille Anzeige) und Form (Text, Grafik, kurz, ausführlich). Hält das Push-Budget ein. |
 | **Selbstüberwachung** | Prüft Sensoren, Datenplausibilität, Verarbeitung und Zustellung. |
 
-### Technologievorschlag (nicht verbindlich)
+### Technik
 
-| Bereich | Vorschlag |
+| Bereich | Entscheidung |
 |---|---|
+| Server-Hardware | eigener Mini-PC nur für VANTA (Modell noch offen) |
+| Betriebssystem | Debian minimal |
+| Betrieb | Docker Compose |
 | Server-Sprache | Python (FastAPI für Schnittstellen) |
 | Datenbank | PostgreSQL mit TimescaleDB (Zeitreihen) und pgvector (semantische Suche) |
 | Warteschlange | Zunächst auf PostgreSQL-Basis, später bei Bedarf Redis |
 | Sprachmodell | Externe API mit Batch-Modus und Prompt Caching |
 | Lokale Auswertung | Statistik, bei Bedarf kleines lokales Modell |
-| App | Swift / SwiftUI |
-| Push | Apple Push Notification Service (bezahlter Entwickleraccount nötig) |
-| Betrieb | Docker Compose im Homelab, Zugriff über Tailscale |
-| Überwachung | Uptime Kuma (Push-Monitore pro Connector) |
+| Verbindung App und Server | Cloudflare Tunnel, Geräte-Authentifizierung, Allowlist, strenge Schemas (siehe SECURITY.md) |
+| Verwaltung | ausschließlich über Tailscale |
+| App | Swift / SwiftUI, Build über GitHub Actions (macOS-Runner), Installation über SideStore |
+| Benachrichtigungen | Lokale Benachrichtigungen der App, Apple Push erst mit bezahltem Entwickleraccount |
+| Überwachung | eigener Status-Endpunkt mit Anzeige in der App, Uptime Kuma von außen |
+| Lizenz | AGPL-3.0 |
 
 ---
 
@@ -236,27 +241,38 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 
 ### M0: Grundlagen
 
-- [ ] Repository-Struktur (Server, App, Doku)
+- [ ] Öffentliches Repository mit LICENSE (AGPL-3.0), Secret Scanning und Push Protection
+- [ ] Commit-E-Mail auf GitHub-Noreply-Adresse gestellt
+- [ ] Pre-Commit-Check auf Schlüssel (gitleaks)
+- [ ] Repository-Struktur (Server, App, Doku, config.example)
+- [ ] Mini-PC mit Debian minimal, SSH nur mit Schlüssel, automatische Sicherheitsupdates
+- [ ] Tailscale für die Verwaltung
+- [ ] Netzsegment bzw. Firewall: kein Zugriff vom VANTA-Server ins Heimnetz
 - [ ] Docker Compose mit PostgreSQL, TimescaleDB, pgvector
 - [ ] Datenmodell Version 1: Rohdaten, Zeitreihen, Feedback, Protokoll, Nutzer-ID überall
 - [ ] Warteschlange und Fehlerwarteschlange
 - [ ] Verschlüsselung nach Stufen, Schlüsselverwaltung
 - [ ] Backup eingerichtet und Wiederherstellung getestet
-- [ ] Uptime Kuma angebunden
+- [ ] Status-Endpunkt (Quellen online/offline, letzter Sync, Warteschlange, letztes Backup)
+- [ ] Uptime Kuma überwacht VANTA von außen
 
 **Fertig, wenn:** Testdaten eingespeist, gespeichert, verarbeitet und aus dem Backup wiederhergestellt werden können.
 
 ### M1: App-Grundgerüst und Gesundheitsdaten
 
-- [ ] Bezahlter Apple-Entwickleraccount
-- [ ] SwiftUI-App mit Anmeldung am Server über Tailscale
+- [ ] GitHub-Actions-Workflow baut die App auf einem macOS-Runner als unsignierte .ipa
+- [ ] Installation und automatische Neusignierung über SideStore
+- [ ] Öffentliche Schnittstelle über Cloudflare Tunnel mit Gateway, Allowlist und Schemas
+- [ ] Geräte-Authentifizierung mit Schlüssel aus der Secure Enclave, Registrierung über Tailscale
+- [ ] SwiftUI-App mit Statusanzeige (Online/Offline, letzter Sync)
+- [ ] Zwischenspeicher in der App: nichts geht verloren, wenn der Server nicht erreichbar ist
 - [ ] HealthKit-Anbindung mit Hintergrundzustellung
-- [ ] Push-Benachrichtigungen über APNs
+- [ ] Lokale Benachrichtigungen: planbare Meldungen werden vorab terminiert
 - [ ] Feedback-Erfassung für eigene Meldungen (zugestellt, geöffnet, weggewischt, Reaktionszeit)
 - [ ] Erste Trendlogik: persönlicher Normalwert und Abweichung für Schlaf und Stress
 - [ ] Sensor-Überwachung für Gesundheitsdaten
 
-**Fertig, wenn:** Eine echte Abweichung im Schlaf oder Stress automatisch als Push ankommt und fehlende Gesundheitsdaten gemeldet werden.
+**Fertig, wenn:** Eine echte Abweichung im Schlaf oder Stress automatisch als Benachrichtigung ankommt und fehlende Gesundheitsdaten gemeldet werden.
 
 ### M2: Nachrichten und Themenverfolgung
 
@@ -284,6 +300,8 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 
 ### M4: Bildschirmzeit und Kontext
 
+- [ ] Bezahlter Apple-Entwickleraccount (Voraussetzung für Family Controls und Apple Push)
+- [ ] Umstellung auf Apple Push für dringende Meldungen
 - [ ] Family-Controls-Berechtigung
 - [ ] DeviceActivityMonitor mit Schwellwerten pro Kategorie
 - [ ] Übertragung über App Group zur App und zum Server
@@ -332,13 +350,15 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 - **iOS-Sandbox:** Inhalte und Benachrichtigungen anderer Apps sind für die eigene App nicht sichtbar. Messbar ist nur die Reaktion auf eigene Meldungen.
 - **Bildschirmzeit:** Detaildaten aus DeviceActivityReport können die Erweiterung nicht verlassen. Nutzbar sind nur Schwellwertereignisse über DeviceActivityMonitor, mit grober Auflösung und ohne App-Namen im Klartext.
 - **WhatsApp:** Keine offizielle Schnittstelle für Privatnutzer. Inoffizielle Wege riskieren eine Sperrung der Nummer. Vorerst nicht vorgesehen.
-- **Apple-Entwickleraccount:** Ohne bezahlten Account läuft die App nach 7 Tagen ab, und Push ist nicht möglich.
+- **Kostenloser Apple-Account (Personal Team):** Die Signatur gilt 7 Tage und wird von SideStore automatisch erneuert. Apple Push und Family Controls (Bildschirmzeit) sind damit nicht verfügbar. Bis M4 laufen Meldungen deshalb als lokale Benachrichtigungen. Planbare Meldungen wie Briefings kommen pünktlich, dringende Meldungen nur, wenn iOS die App im Hintergrund weckt, also mit möglicher Verzögerung.
+- **Ohne Mac:** Kein Simulator, keine SwiftUI-Vorschau, kein Debugger. Jede Änderung läuft über einen Build in GitHub Actions.
 - **Batch-Laufzeit:** bis zu 24 Stunden, deshalb Annahmeschluss und Rückfall auf Echtzeit nötig.
 
 ---
 
 ## 11. Offene Entscheidungen
 
+- [ ] Exaktes Modell des Mini-PCs
 - [ ] Welcher LLM-Anbieter, welches Modell für Echtzeit und Batch
 - [ ] Gmail-API oder IMAP
 - [ ] Welche Nachrichtenquellen
@@ -357,6 +377,6 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 | RAM | 8 bis 16 GB |
 | Speicher | 5 bis 20 GB Zuwachs pro Jahr (Schätzung), plus Backup |
 | GPU | nicht nötig bei API-Lösung |
-| Betrieb | VM oder Mini-PC im Homelab |
+| Betrieb | eigener Mini-PC nur für VANTA |
 
 Bei späterer Erweiterung auf mehrere Nutzer: Mandantentrennung, Schlüssel pro Nutzer, Rechteverwaltung und DSGVO (Gesundheitsdaten nach Art. 9) sind der größte Aufwand, nicht die Rechenleistung.
