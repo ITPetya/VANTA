@@ -20,4 +20,5 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Ve
 - pyproject.toml mit ruff, mypy und pytest
 - ROADMAP: Betriebsmodell (eigene Hardware, ein bis zwei Nutzer) und Regeln für einen späteren Umzug in die Cloud, Hardware-Abschnitt aktualisiert
 - CLAUDE.md: Regeln für Nutzertrennung und Portabilität
+- Datenmodell Version 1 (Nutzer, Datenquellen, Rohdaten, Zeitreihen als TimescaleDB-Hypertable, Feedback, Protokoll) mit Alembic-Migration 0002 und Tests; Datenbanktests laufen nur mit VANTA_TEST_DATABASE_URL (neue Dev-Abhängigkeit psycopg, nur für diese Tests)
 - docs/SETUP.md und Vorlage für den CI-Workflow (docs/ci-workflow.yml)

@@ -249,7 +249,7 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 - [ ] Tailscale für die Verwaltung
 - [ ] Netzsegment bzw. Firewall: kein Zugriff vom VANTA-Server ins Heimnetz
 - [x] Docker Compose mit PostgreSQL, TimescaleDB, pgvector
-- [ ] Datenmodell Version 1: Rohdaten, Zeitreihen, Feedback, Protokoll, Nutzer-ID überall
+- [x] Datenmodell Version 1: Rohdaten, Zeitreihen, Feedback, Protokoll, Nutzer-ID überall
 - [ ] Warteschlange und Fehlerwarteschlange
 - [ ] Verschlüsselung nach Stufen, Schlüsselverwaltung
 - [ ] Backup eingerichtet und Wiederherstellung getestet

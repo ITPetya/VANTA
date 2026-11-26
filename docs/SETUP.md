@@ -72,3 +72,9 @@ cp docs/ci-workflow.yml .github/workflows/ci.yml
 ```
 
 Danach führt jeder Pull Request ruff, mypy und pytest aus.
+
+## Datenbanktests
+
+Die Tests der Migration und Constraints laufen nur, wenn `VANTA_TEST_DATABASE_URL` gesetzt ist
+(PostgreSQL mit TimescaleDB, Treiber `postgresql+psycopg`). Der Test löscht das Schema `public`,
+deshalb nur eine leere Wegwerf-Datenbank verwenden, nie die echte.
