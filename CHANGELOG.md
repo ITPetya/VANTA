@@ -6,6 +6,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Ve
 ## [Unveröffentlicht]
 
 ### Hinzugefügt
+- CI: Datenbank-Service (TimescaleDB) für die Datenbanktests, Lauf auch bei Pushes auf Claude-Branches
+- Workflow, der für Claude-Branches automatisch einen Pull Request erstellt
 - Projektkonzept und Projektleitfaden (ROADMAP.md)
 - README.md, SECURITY.md, CHANGELOG.md
 - .gitignore und .env.example
