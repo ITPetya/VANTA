@@ -1,6 +1,6 @@
 # VANTA: Projektleitfaden und Roadmap
 
-> Persönliches Projekt, ausgelegt auf einen Nutzer.
+> Persönliches Projekt, ausgelegt auf einen bis zwei Nutzer (höchstens drei aus der Familie). Betrieb auf eigener Hardware, siehe Abschnitt 13.
 > Dieses Dokument beschreibt Ziel, Grundprinzipien, Architektur und Meilensteine. Es ist bewusst als Richtung gedacht, nicht als fertige Spezifikation. Details werden pro Meilenstein konkretisiert.
 
 ---
@@ -358,7 +358,7 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 
 ## 11. Offene Entscheidungen
 
-- [ ] Exaktes Modell des Mini-PCs
+- [ ] Exaktes Modell des Mini-PCs (Favorit: gebrauchter ThinkCentre M720q mit i5-8400T)
 - [ ] Welcher LLM-Anbieter, welches Modell für Echtzeit und Batch
 - [ ] Gmail-API oder IMAP
 - [ ] Welche Nachrichtenquellen
@@ -369,14 +369,33 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 
 ---
 
-## 12. Hardware (ein Nutzer)
+## 12. Hardware (ein bis zwei Nutzer)
 
 | Bereich | Bedarf |
 |---|---|
-| CPU | 4 Kerne |
-| RAM | 8 bis 16 GB |
-| Speicher | 5 bis 20 GB Zuwachs pro Jahr (Schätzung), plus Backup |
+| Gerät | gebrauchter Mini-PC, z. B. Lenovo ThinkCentre M720q / M920q mit i5 (T-Modell) |
+| CPU | 4 bis 6 Kerne |
+| RAM | 8 GB reichen für den Start, 16 GB als spätere Aufrüstung |
+| Speicher | SSD ab 256 GB; Zuwachs grob 5 bis 20 GB pro Nutzer und Jahr (Schätzung), plus Backup |
 | GPU | nicht nötig bei API-Lösung |
 | Betrieb | eigener Mini-PC nur für VANTA |
 
-Bei späterer Erweiterung auf mehrere Nutzer: Mandantentrennung, Schlüssel pro Nutzer, Rechteverwaltung und DSGVO (Gesundheitsdaten nach Art. 9) sind der größte Aufwand, nicht die Rechenleistung.
+---
+
+## 13. Betriebsmodell und spätere Erweiterung
+
+### Heute
+
+- VANTA läuft ausschließlich auf eigener Hardware im eigenen Netz.
+- Nutzer: der Projektinhaber, bei Bedarf bis zu zwei weitere Familienmitglieder. Realistisch ein bis zwei Nutzer.
+- Das iPhone erreicht den Server auch unterwegs über die abgesicherte Schnittstelle (siehe SECURITY.md). Verwaltung nur über Tailscale.
+
+### Später: Umzug in die Cloud
+
+Sollte VANTA tatsächlich von mehreren Nutzern verwendet werden, zieht das System auf einen Cloud-Server um (z. B. AWS). Damit das ohne Umbau möglich ist, gilt ab sofort:
+
+1. **Portabel bleiben:** Keine Abhängigkeit von der Heimnetz-Hardware im Code. Alles läuft in Containern, alle Einstellungen kommen aus `.env` bzw. `config/`. Der Umzug besteht aus: Compose auf neuem Rechner starten, Datenbank übertragen, Serveradresse in der App ändern.
+2. **Nutzertrennung von Anfang an:** Nutzer-ID in jeder Tabelle und jedem Schlüssel. Kein Nutzer kann Daten eines anderen sehen. Eigene Verschlüsselungsschlüssel pro Nutzer, spätestens bevor ein zweiter Nutzer dazukommt.
+3. **Bewusste Entscheidung vor dem Umzug:** Das Prinzip "Gesundheitsdaten verlassen den eigenen Server nicht" muss neu bewertet werden. Bei Nutzern außerhalb der Familie gilt die DSGVO vollständig, Gesundheitsdaten sind besonders geschützt (Art. 9). Mögliche Lösungen: Rechenzentrum in der EU, Verschlüsselung mit Schlüsseln, die nur beim Betreiber bzw. Nutzer liegen.
+
+Mandantentrennung, Schlüssel pro Nutzer, Rechteverwaltung und Datenschutz sind bei der Erweiterung der größte Aufwand, nicht die Rechenleistung.

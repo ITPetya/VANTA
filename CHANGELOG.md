@@ -18,4 +18,6 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Ve
 - deploy/docker-compose.yml mit PostgreSQL (TimescaleDB, pgvector) und API-Dienst
 - Alembic mit erster leerer Migration
 - pyproject.toml mit ruff, mypy und pytest
+- ROADMAP: Betriebsmodell (eigene Hardware, ein bis zwei Nutzer) und Regeln für einen späteren Umzug in die Cloud, Hardware-Abschnitt aktualisiert
+- CLAUDE.md: Regeln für Nutzertrennung und Portabilität
 - docs/SETUP.md und Vorlage für den CI-Workflow (docs/ci-workflow.yml)
