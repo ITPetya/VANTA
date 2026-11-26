@@ -250,7 +250,7 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 - [ ] Netzsegment bzw. Firewall: kein Zugriff vom VANTA-Server ins Heimnetz
 - [x] Docker Compose mit PostgreSQL, TimescaleDB, pgvector
 - [x] Datenmodell Version 1: Rohdaten, Zeitreihen, Feedback, Protokoll, Nutzer-ID überall
-- [ ] Warteschlange und Fehlerwarteschlange
+- [x] Warteschlange und Fehlerwarteschlange
 - [ ] Verschlüsselung nach Stufen, Schlüsselverwaltung
 - [ ] Backup eingerichtet und Wiederherstellung getestet
 - [ ] Status-Endpunkt (Quellen online/offline, letzter Sync, Warteschlange, letztes Backup)

@@ -17,6 +17,7 @@ from sqlalchemy import (
     ForeignKey,
     ForeignKeyConstraint,
     Identity,
+    Index,
     Integer,
     LargeBinary,
     MetaData,
@@ -25,6 +26,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
     func,
+    text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -90,6 +92,7 @@ class RawItem(Base):
         ForeignKeyConstraint(["user_id", "source_id"], ["data_sources.user_id", "data_sources.id"]),
         # The checksum makes re-delivery harmless (idempotent ingest).
         UniqueConstraint("user_id", "source_id", "content_hash"),
+        UniqueConstraint("user_id", "id"),  # target of composite foreign keys
         CheckConstraint(SENSITIVITY_CHECK, name="sensitivity_range"),
         CheckConstraint("octet_length(content_hash) = 32", name="hash_is_sha256"),
     )
@@ -166,3 +169,58 @@ class ActionLog(Base):
     # Why the action happened (traceability).
     reason: Mapped[str | None] = mapped_column(Text)
     details: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+
+
+JOB_STATUSES = ("pending", "running", "done", "dead")
+
+
+class QueueJob(Base):
+    """Work item on the PostgreSQL based queue.
+
+    Lifecycle: ``pending`` -> ``running`` -> ``done``. A failed run goes back to ``pending``
+    with a later ``run_after`` (backoff). After ``max_attempts`` failures the job becomes
+    ``dead``: that is the error queue. Dead jobs are never deleted, only requeued by hand.
+    """
+
+    __tablename__ = "queue_jobs"
+    __table_args__ = (
+        ForeignKeyConstraint(["user_id", "raw_item_id"], ["raw_items.user_id", "raw_items.id"]),
+        # One job per raw item and job type: re-delivery cannot create duplicate work.
+        UniqueConstraint("user_id", "raw_item_id", "job_type"),
+        UniqueConstraint("user_id", "id"),  # target of composite foreign keys
+        CheckConstraint("status IN ('pending', 'running', 'done', 'dead')", name="status_known"),
+        CheckConstraint("attempts >= 0", name="attempts_nonnegative"),
+        CheckConstraint("max_attempts >= 1", name="max_attempts_positive"),
+        # Claiming looks for due pending jobs.
+        Index("ix_queue_jobs_pending", "run_after", postgresql_where=text("status = 'pending'")),
+    )
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    raw_item_id: Mapped[int] = mapped_column(BigInteger)
+    job_type: Mapped[str] = mapped_column(String(100))
+    status: Mapped[str] = mapped_column(String(16), server_default="pending")
+    # Number of runs that ended in failure so far (the failure count).
+    attempts: Mapped[int] = mapped_column(Integer, server_default="0")
+    max_attempts: Mapped[int] = mapped_column(Integer, server_default="5")
+    run_after: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=_now())
+    locked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_error: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=_now())
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class JobFailure(Base):
+    """History of every failed run of a job (append only)."""
+
+    __tablename__ = "job_failures"
+    __table_args__ = (
+        ForeignKeyConstraint(["user_id", "job_id"], ["queue_jobs.user_id", "queue_jobs.id"]),
+    )
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    job_id: Mapped[int] = mapped_column(BigInteger)
+    attempt: Mapped[int] = mapped_column(Integer)
+    error: Mapped[str] = mapped_column(Text)
+    failed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=_now())

@@ -45,6 +45,8 @@ def test_expected_tables_exist() -> None:
         "measurements",
         "feedback",
         "action_log",
+        "queue_jobs",
+        "job_failures",
     }
 
 
