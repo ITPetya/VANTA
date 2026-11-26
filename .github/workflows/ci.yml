@@ -1,6 +1,3 @@
-# Vorlage für .github/workflows/ci.yml
-# Claude darf keine Dateien in .github/workflows ändern. Diese Datei bitte
-# manuell nach .github/workflows/ci.yml kopieren (siehe docs/SETUP.md).
 name: CI
 
 on:
