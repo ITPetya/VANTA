@@ -27,7 +27,8 @@ Bei Widersprüchen gilt: `SECURITY.md` vor `ROADMAP.md` vor dieser Datei vor dem
 
 - **Niemals Zugangsdaten, Schlüssel, Tokens, Passwörter oder echte Daten in den Code oder ins Repository.** Konfiguration kommt aus `.env` bzw. `config/`. Im Repository liegen nur Vorlagen (`.env.example`, `config.example/`). Neue Einstellungen immer auch in die Vorlage eintragen, ohne echte Werte.
 - **Keine Beispieldaten, die echt aussehen** (echte Namen, Adressen, Mailadressen, Gesundheitswerte einer realen Person). Testdaten sind erkennbar künstlich.
-- **Nutzer-ID in jeder Tabelle und jedem Schlüssel**, auch wenn es nur einen Nutzer gibt.
+- **Nutzer-ID in jeder Tabelle und jedem Schlüssel**, auch wenn es nur einen Nutzer gibt. Jede Abfrage filtert nach Nutzer-ID, kein Nutzer darf Daten eines anderen sehen.
+- **Portabel bleiben.** Keine Annahmen über die Heimnetz-Hardware im Code (feste IP-Adressen, Pfade, Hostnamen). VANTA soll später ohne Umbau auf einen Cloud-Server umziehen können (siehe ROADMAP, Abschnitt 13).
 - **Nichts darf verloren gehen.** Eingehende Daten zuerst unverändert speichern, dann verarbeiten. Fehlgeschlagenes landet in der Fehlerwarteschlange. Verarbeitung muss bei Wiederholung folgenlos bleiben (idempotent).
 - **Stille ist ein Fehler.** Jede Datenquelle meldet ihren letzten erfolgreichen Lauf an die Selbstüberwachung.
 - **Öffentliche Schnittstelle nach Allowlist.** Jeder Endpunkt hat ein strenges Schema: feste Typen, Wertebereiche, Maximallängen, unbekannte Felder werden abgelehnt (Pydantic mit `extra="forbid"`). Keine Verwaltungs-, Datei- oder Debug-Endpunkte öffentlich.
