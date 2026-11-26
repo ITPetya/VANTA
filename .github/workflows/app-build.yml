@@ -1,12 +1,12 @@
-# Vorlage: nach .github/workflows/app-build.yml kopieren.
-# Der Claude-Zugang darf Workflow-Dateien nicht ändern, daher liegt sie hier.
 name: App Build
 
 on:
   workflow_dispatch:
   push:
-    branches: [main]
-    paths: ["app/**"]
+    branches: [main, "claude/**"]
+    paths: ["app/**", ".github/workflows/app-build.yml"]
+  pull_request:
+    paths: ["app/**", ".github/workflows/app-build.yml"]
 
 permissions:
   contents: read

@@ -14,7 +14,7 @@ Die Serveradresse steht nicht im Code: Sie wird in der App unter "Einstellungen"
 
 ## Build über GitHub Actions
 
-1. `docs/app-build-workflow.yml` nach `.github/workflows/app-build.yml` kopieren und einchecken.
+1. Der Workflow liegt in `.github/workflows/app-build.yml` und läuft bei Änderungen in `app/` sowie manuell ("Run workflow").
 2. Im Reiter "Actions" den Workflow "App Build" starten (oder auf Änderungen in `app/` warten).
 3. Nach dem Lauf das Artefakt `VANTA-ipa` herunterladen und entpacken. Es enthält die unsignierte `VANTA.ipa`.
 
