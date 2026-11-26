@@ -244,11 +244,11 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 - [ ] Öffentliches Repository mit LICENSE (AGPL-3.0), Secret Scanning und Push Protection
 - [ ] Commit-E-Mail auf GitHub-Noreply-Adresse gestellt
 - [ ] Pre-Commit-Check auf Schlüssel (gitleaks)
-- [ ] Repository-Struktur (Server, App, Doku, config.example)
+- [x] Repository-Struktur (Server, App, Doku, config.example)
 - [ ] Mini-PC mit Debian minimal, SSH nur mit Schlüssel, automatische Sicherheitsupdates
 - [ ] Tailscale für die Verwaltung
 - [ ] Netzsegment bzw. Firewall: kein Zugriff vom VANTA-Server ins Heimnetz
-- [ ] Docker Compose mit PostgreSQL, TimescaleDB, pgvector
+- [x] Docker Compose mit PostgreSQL, TimescaleDB, pgvector
 - [ ] Datenmodell Version 1: Rohdaten, Zeitreihen, Feedback, Protokoll, Nutzer-ID überall
 - [ ] Warteschlange und Fehlerwarteschlange
 - [ ] Verschlüsselung nach Stufen, Schlüsselverwaltung
