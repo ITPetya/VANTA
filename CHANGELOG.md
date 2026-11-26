@@ -22,3 +22,4 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Ve
 - CLAUDE.md: Regeln für Nutzertrennung und Portabilität
 - Datenmodell Version 1 (Nutzer, Datenquellen, Rohdaten, Zeitreihen als TimescaleDB-Hypertable, Feedback, Protokoll) mit Alembic-Migration 0002 und Tests; Datenbanktests laufen nur mit VANTA_TEST_DATABASE_URL (neue Dev-Abhängigkeit psycopg, nur für diese Tests)
 - docs/SETUP.md und Vorlage für den CI-Workflow (docs/ci-workflow.yml)
+- App-Grundgerüst (SwiftUI) mit Startbildschirm und Beispieldaten, Serveradresse als Einstellung, xcconfig-Vorlage, App-Icon, Vorlage für den Build-Workflow (docs/app-build-workflow.yml) und Anleitung für SideStore (docs/APP.md); neue Build-Abhängigkeit XcodeGen, damit kein Xcode-Projekt von Hand gepflegt werden muss

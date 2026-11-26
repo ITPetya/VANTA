@@ -1,0 +1,4 @@
+// Copy to VANTA.local.xcconfig (ignored by git) and fill in your own values.
+// Never commit the real file.
+PRODUCT_BUNDLE_IDENTIFIER = com.example.vanta
+DEVELOPMENT_TEAM = XXXXXXXXXX

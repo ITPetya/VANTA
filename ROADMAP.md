@@ -260,7 +260,7 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 
 ### M1: App-Grundgerüst und Gesundheitsdaten
 
-- [ ] GitHub-Actions-Workflow baut die App auf einem macOS-Runner als unsignierte .ipa
+- [x] GitHub-Actions-Workflow baut (Vorlage in docs/, ungetestet) die App auf einem macOS-Runner als unsignierte .ipa
 - [ ] Installation und automatische Neusignierung über SideStore
 - [ ] Öffentliche Schnittstelle über Cloudflare Tunnel mit Gateway, Allowlist und Schemas
 - [ ] Geräte-Authentifizierung mit Schlüssel aus der Secure Enclave, Registrierung über Tailscale

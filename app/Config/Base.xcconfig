@@ -1,0 +1,6 @@
+// Defaults that are safe to commit. Real values go into VANTA.local.xcconfig
+// (git-ignored, see VANTA.local.xcconfig.example).
+PRODUCT_BUNDLE_IDENTIFIER = invalid.example.vanta
+DEVELOPMENT_TEAM =
+
+#include? "VANTA.local.xcconfig"
