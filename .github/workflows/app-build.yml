@@ -1,0 +1,44 @@
+name: App Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, "claude/**"]
+    paths: ["app/**", ".github/workflows/app-build.yml"]
+  pull_request:
+    paths: ["app/**", ".github/workflows/app-build.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        run: xcodegen generate
+      - name: Build (unsigned)
+        run: |
+          xcodebuild archive \
+            -project VANTA.xcodeproj \
+            -scheme VANTA \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath build/VANTA.xcarchive \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+      - name: Package .ipa
+        run: |
+          mkdir -p build/Payload
+          cp -R build/VANTA.xcarchive/Products/Applications/VANTA.app build/Payload/
+          cd build && zip -qr VANTA.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VANTA-ipa
+          path: app/build/VANTA.ipa
+          if-no-files-found: error
