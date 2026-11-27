@@ -1,0 +1,7 @@
+# Einrichtung: pip install pre-commit && pre-commit install
+# Prüft jeden Commit auf Schlüssel und Zugangsdaten (gitleaks), bevor er entsteht.
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks

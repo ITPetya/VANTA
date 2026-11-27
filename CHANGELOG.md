@@ -6,6 +6,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Ve
 ## [Unveröffentlicht]
 
 ### Hinzugefügt
+- Backup (server/backup): verschlüsselter Datenbank-Dump (AES-256 über openssl, Passphrase aus Schlüsseldatei), atomares Schreiben, Aufbewahrungsregel (neueste N), Meldung des Erfolgs über die Marker-Datei an die Selbstüberwachung (bei Fehler weder Meldung noch Löschen alter Backups), Entschlüsselung per `python -m server.backup decrypt`, neue Einstellungen in .env.example, Anleitung zur Wiederherstellung in docs/BACKUP.md und Tests
+- Pre-Commit-Konfiguration mit gitleaks (.pre-commit-config.yaml)
 - Selbstüberwachung (server/monitoring): Quellen melden ihren letzten erfolgreichen Lauf, Quelle länger still als erwartet (Intervall mal 1,5) oder nie gemeldet gilt als offline, interner Status-Endpunkt `/internal/status` (Quellen, letzter Sync, Länge von Warteschlange und Fehlerwarteschlange, letztes Backup über eine Marker-Datei), optionaler Push an Uptime Kuma pro Quelle (URLs aus .env), neue Einstellungen in .env.example und Tests; httpx ist jetzt Laufzeitabhängigkeit (Kuma-Push)
 - App-Build veröffentlicht bei jedem Merge auf main ein Release mit .ipa und SideStore-Quelle (source.json), Updates direkt in SideStore; Test für den Quellen-Generator
 - Verschlüsselung nach Sensibilitätsstufen (server/crypto.py): Stufe 1 unverschlüsselt, Stufe 2 und 3 mit AES-256-GCM und getrennten Schlüsseldateien, Schlüsselversion im Wert gespeichert, Schlüssel pro Nutzer abgeleitet, klare Fehlermeldung bei fehlendem Schlüssel, Anleitung in docs/VERSCHLUESSELUNG.md; neue Abhängigkeit cryptography
