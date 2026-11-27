@@ -31,7 +31,7 @@ def main() -> None:
                 "bundleIdentifier": a.bundle_id,
                 "developerName": "VANTA",
                 "subtitle": "Proaktiver persönlicher Assistent",
-                "localizedDescription": "VANTA App, automatisch gebaut aus dem öffentlichen Repository.",
+                "localizedDescription": "VANTA App, automatisch gebaut aus dem Repository.",
                 "iconURL": f"{raw}/assets/icons/ios/AppIcon~ios-marketing.png",
                 "tintColor": "4F46E5",
                 "versions": [

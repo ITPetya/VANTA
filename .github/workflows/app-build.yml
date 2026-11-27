@@ -30,6 +30,8 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate
       - name: Build (unsigned)
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
         run: |
           xcodebuild archive \
             -project VANTA.xcodeproj \
@@ -38,7 +40,7 @@ jobs:
             -sdk iphoneos \
             -archivePath build/VANTA.xcarchive \
             PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
-            CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
+            CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
       - name: Package .ipa
         run: |
@@ -63,6 +65,7 @@ jobs:
         run: |
           set -euo pipefail
           VERSION=$(sed -nE 's/^ *MARKETING_VERSION: *"?([0-9.]+)"?.*/\1/p' project.yml | head -1)
+          [ -n "$VERSION" ] || { echo "MARKETING_VERSION nicht gefunden"; exit 1; }
           TAG="app-v${VERSION}-${BUILD}"
           SIZE=$(stat -f%z build/VANTA.ipa)
           DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
@@ -70,6 +73,10 @@ jobs:
             --repo "$REPO" --tag "$TAG" --version "$VERSION" --build "$BUILD" \
             --bundle-id "$BUNDLE_ID" --size "$SIZE" --date "$DATE" \
             --out build/source.json
+          if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            echo "Release $TAG existiert bereits, nichts zu tun."
+            exit 0
+          fi
           gh release create "$TAG" build/VANTA.ipa build/source.json \
             --repo "$REPO" \
             --title "VANTA App ${VERSION} (Build ${BUILD})" \
