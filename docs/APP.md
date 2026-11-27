@@ -18,11 +18,25 @@ Die Serveradresse steht nicht im Code: Sie wird in der App unter "Einstellungen"
 2. Im Reiter "Actions" den Workflow "App Build" starten (oder auf Änderungen in `app/` warten).
 3. Nach dem Lauf das Artefakt `VANTA-ipa` herunterladen und entpacken. Es enthält die unsignierte `VANTA.ipa`.
 
-## Installation über SideStore
+## Installation und Updates über SideStore
+
+Der PC wird nur einmal gebraucht, für die Einrichtung von SideStore selbst. Danach läuft alles auf dem iPhone.
+
+### Einmalig
 
 1. SideStore auf dem iPhone einrichten (siehe Dokumentation von SideStore).
-2. `VANTA.ipa` auf das iPhone übertragen (z. B. über die Dateien-App).
-3. In SideStore auf "+" tippen und die `.ipa` auswählen. SideStore signiert sie mit der eigenen Apple-ID.
-4. SideStore erneuert die Signatur automatisch, bevor sie nach sieben Tagen abläuft (dafür muss SideStore regelmäßig laufen).
+2. In SideStore unter "Sources" auf "+" tippen und diese Adresse hinzufügen:
+   `https://github.com/ITPetya/VANTA/releases/latest/download/source.json`
+3. VANTA erscheint in der Quelle. Dort auf "Free" bzw. "Install" tippen.
 
-Der Build wurde bisher nicht auf einem macOS-Runner ausgeführt; der erste Lauf kann Anpassungen nötig machen.
+### Updates
+
+Bei jedem Merge auf `main`, der `app/` betrifft, baut GitHub die App, erhöht die Build-Nummer und veröffentlicht ein Release mit `VANTA.ipa` und `source.json`. SideStore zeigt danach bei VANTA ein Update an, ein Tippen genügt.
+
+SideStore erneuert außerdem die Signatur automatisch im Hintergrund, bevor sie nach sieben Tagen abläuft.
+
+### Hinweise
+
+- Die Adresse `releases/latest/download/...` zeigt immer auf das neueste Release. Spätere Releases für andere Teile von VANTA (z. B. Server) müssen deshalb mit `--latest=false` erstellt werden, sonst findet SideStore die Quelle nicht mehr.
+- Die .ipa ist öffentlich herunterladbar. Das ist unkritisch, da sie keine Zugangsdaten enthält. Die Serveradresse wird erst in der App eingetragen.
+- Alternativ lässt sich eine .ipa weiterhin manuell installieren: Artefakt `VANTA-ipa` aus dem Workflow-Lauf herunterladen, entpacken und in SideStore über "+" auswählen.
