@@ -2,6 +2,7 @@ import SwiftUI
 
 struct StatusView: View {
     @ObservedObject var health: HealthKitManager
+    @ObservedObject var notifications: NotificationManager
     @AppStorage(SettingsKey.serverURL) private var serverURL = ""
     @State private var status = SyncStatus.sample
     @State private var showSettings = false
@@ -28,6 +29,7 @@ struct StatusView: View {
                     }
                 }
                 HealthSection(manager: health)
+                FeedbackSection()
                 Section {
                     Text("Beispieldaten: noch keine Verbindung zum Server.")
                         .font(.footnote)
@@ -38,12 +40,13 @@ struct StatusView: View {
             .toolbar {
                 Button("Einstellungen", systemImage: "gearshape") { showSettings = true }
             }
-            .sheet(isPresented: $showSettings) { SettingsView() }
+            .sheet(isPresented: $showSettings) { SettingsView(notifications: notifications) }
         }
     }
 }
 
 struct SettingsView: View {
+    @ObservedObject var notifications: NotificationManager
     @AppStorage(SettingsKey.serverURL) private var serverURL = ""
     @Environment(\.dismiss) private var dismiss
 
@@ -56,6 +59,7 @@ struct SettingsView: View {
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                 }
+                NotificationSettingsSection(manager: notifications)
             }
             .navigationTitle("Einstellungen")
             .toolbar {

@@ -267,8 +267,8 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 - [ ] SwiftUI-App mit Statusanzeige (Online/Offline, letzter Sync)
 - [ ] Zwischenspeicher in der App: nichts geht verloren, wenn der Server nicht erreichbar ist (Gesundheitsdaten lokal gepuffert, Upload steht aus)
 - [x] HealthKit-Anbindung mit Hintergrundzustellung (lokal, Test über SideStore auf dem Gerät steht aus)
-- [ ] Lokale Benachrichtigungen: planbare Meldungen werden vorab terminiert
-- [ ] Feedback-Erfassung für eigene Meldungen (zugestellt, geöffnet, weggewischt, Reaktionszeit)
+- [x] Lokale Benachrichtigungen: planbare Meldungen werden vorab terminiert (Test auf dem Gerät steht aus)
+- [x] Feedback-Erfassung für eigene Meldungen (zugestellt, geöffnet, weggewischt, Reaktionszeit; Test auf dem Gerät steht aus)
 - [ ] Erste Trendlogik: persönlicher Normalwert und Abweichung für Schlaf und Stress
 - [ ] Sensor-Überwachung für Gesundheitsdaten
 
