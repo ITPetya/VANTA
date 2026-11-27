@@ -6,6 +6,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Ve
 ## [Unveröffentlicht]
 
 ### Hinzugefügt
+- App: HealthKit lesen (Schlaf, Herzfrequenz, HRV, Ruhepuls, Gewicht, Schritte, nur Lesezugriff) mit Hintergrundzustellung, lokaler SwiftData-Zwischenspeicher mit eindeutiger ID und Status "nicht hochgeladen", Ansicht mit letzten Werten, Anzahl im Zwischenspeicher, letzter Hintergrundzustellung und Hinweis bei fehlender Berechtigung; Entitlements in docs/APP.md
 - Backup (server/backup): verschlüsselter Datenbank-Dump (AES-256 über openssl, Passphrase aus Schlüsseldatei), atomares Schreiben, Aufbewahrungsregel (neueste N), Meldung des Erfolgs über die Marker-Datei an die Selbstüberwachung (bei Fehler weder Meldung noch Löschen alter Backups), Entschlüsselung per `python -m server.backup decrypt`, neue Einstellungen in .env.example, Anleitung zur Wiederherstellung in docs/BACKUP.md und Tests
 - Pre-Commit-Konfiguration mit gitleaks (.pre-commit-config.yaml)
 - Selbstüberwachung (server/monitoring): Quellen melden ihren letzten erfolgreichen Lauf, Quelle länger still als erwartet (Intervall mal 1,5) oder nie gemeldet gilt als offline, interner Status-Endpunkt `/internal/status` (Quellen, letzter Sync, Länge von Warteschlange und Fehlerwarteschlange, letztes Backup über eine Marker-Datei), optionaler Push an Uptime Kuma pro Quelle (URLs aus .env), neue Einstellungen in .env.example und Tests; httpx ist jetzt Laufzeitabhängigkeit (Kuma-Push)
