@@ -30,6 +30,14 @@ class Settings(BaseSettings):
 
     # Self monitoring. The backup job touches this file after each successful backup.
     vanta_backup_marker_path: Path | None = None
+
+    # Backup (see docs/BACKUP.md). The key file is a passphrase and must not live next
+    # to the backups.
+    vanta_backup_dir: Path | None = None
+    vanta_backup_key_path: Path | None = None
+    vanta_backup_keep: int = Field(default=14, ge=1)
+    # Optional override of the dump command (e.g. "docker compose ... exec -T db pg_dump ...").
+    vanta_backup_dump_command: str = ""
     # Uptime Kuma push URLs (secret tokens inside). Empty means no push for that source.
     kuma_push_ingest_health: SecretStr | None = None
     kuma_push_ingest_mail: SecretStr | None = None

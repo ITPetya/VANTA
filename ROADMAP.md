@@ -162,7 +162,7 @@ flowchart LR
 
 ### Backup
 
-- [ ] Tägliches, verschlüsseltes Backup
+- [x] Tägliches, verschlüsseltes Backup (Skript und Anleitung in docs/BACKUP.md, Einrichtung per Cron auf dem Server steht noch aus)
 - [ ] Zweite Kopie an einem externen Ort
 - [ ] Wiederherstellung regelmäßig testen
 
@@ -243,7 +243,7 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 
 - [ ] Öffentliches Repository mit LICENSE (AGPL-3.0), Secret Scanning und Push Protection
 - [ ] Commit-E-Mail auf GitHub-Noreply-Adresse gestellt
-- [ ] Pre-Commit-Check auf Schlüssel (gitleaks)
+- [x] Pre-Commit-Check auf Schlüssel (gitleaks, `.pre-commit-config.yaml`)
 - [x] Repository-Struktur (Server, App, Doku, config.example)
 - [ ] Mini-PC mit Debian minimal, SSH nur mit Schlüssel, automatische Sicherheitsupdates
 - [ ] Tailscale für die Verwaltung

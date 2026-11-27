@@ -19,6 +19,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.exc import IntegrityError
 
 from server.db.models import Base
+from server.tests.db_reset import reset_public_schema
 
 TEST_URL = os.environ.get("VANTA_TEST_DATABASE_URL") or None
 
@@ -57,9 +58,7 @@ pytestmark_db = pytest.mark.skipif(TEST_URL is None, reason="VANTA_TEST_DATABASE
 def conn() -> Iterator[Connection]:
     assert TEST_URL is not None
     engine = create_engine(TEST_URL.replace("+asyncpg", "+psycopg"))
-    with engine.connect() as c:
-        c.execute(text("DROP SCHEMA public CASCADE; CREATE SCHEMA public"))
-        c.commit()
+    reset_public_schema(engine)
     yield engine.connect()
     engine.dispose()
 

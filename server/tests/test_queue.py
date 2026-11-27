@@ -18,6 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from server.db.models import JobFailure, QueueJob, RawItem
 from server.processing import queue
+from server.tests.db_reset import reset_public_schema
 
 TEST_URL = os.environ.get("VANTA_TEST_DATABASE_URL") or None
 
@@ -39,8 +40,7 @@ def migrated() -> Iterator[str]:
     url = make_url(TEST_URL)
     sync_url = TEST_URL.replace("+asyncpg", "+psycopg")
     engine = create_engine(sync_url)
-    with engine.begin() as c:
-        c.execute(text("DROP SCHEMA public CASCADE; CREATE SCHEMA public"))
+    reset_public_schema(engine)
     env = {
         **os.environ,
         "POSTGRES_HOST": url.host or "localhost",
