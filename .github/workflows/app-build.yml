@@ -11,9 +11,15 @@ on:
 permissions:
   contents: read
 
+env:
+  # Öffentliche Bundle-ID der App. Keine geheime Angabe, sie steht ohnehin in jeder .ipa.
+  BUNDLE_ID: io.github.itpetya.vanta
+
 jobs:
   build:
     runs-on: macos-latest
+    permissions:
+      contents: write
     defaults:
       run:
         working-directory: app
@@ -24,6 +30,8 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate
       - name: Build (unsigned)
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
         run: |
           xcodebuild archive \
             -project VANTA.xcodeproj \
@@ -31,6 +39,8 @@ jobs:
             -configuration Release \
             -sdk iphoneos \
             -archivePath build/VANTA.xcarchive \
+            PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
+            CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
       - name: Package .ipa
         run: |
@@ -42,3 +52,33 @@ jobs:
           name: VANTA-ipa
           path: app/build/VANTA.ipa
           if-no-files-found: error
+
+      # Nur bei main: Release mit .ipa und SideStore-Quelle (source.json) veröffentlichen.
+      # Die Quelle ist dauerhaft erreichbar unter
+      # https://github.com/<owner>/<repo>/releases/latest/download/source.json
+      - name: Release für SideStore veröffentlichen
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          BUILD: ${{ github.run_number }}
+        run: |
+          set -euo pipefail
+          VERSION=$(sed -nE 's/^ *MARKETING_VERSION: *"?([0-9.]+)"?.*/\1/p' project.yml | head -1)
+          [ -n "$VERSION" ] || { echo "MARKETING_VERSION nicht gefunden"; exit 1; }
+          TAG="app-v${VERSION}-${BUILD}"
+          SIZE=$(stat -f%z build/VANTA.ipa)
+          DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          python3 ../.github/scripts/make_source.py \
+            --repo "$REPO" --tag "$TAG" --version "$VERSION" --build "$BUILD" \
+            --bundle-id "$BUNDLE_ID" --size "$SIZE" --date "$DATE" \
+            --out build/source.json
+          if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            echo "Release $TAG existiert bereits, nichts zu tun."
+            exit 0
+          fi
+          gh release create "$TAG" build/VANTA.ipa build/source.json \
+            --repo "$REPO" \
+            --title "VANTA App ${VERSION} (Build ${BUILD})" \
+            --notes "Automatischer Build von ${GITHUB_SHA}. Installation und Updates über SideStore, siehe docs/APP.md." \
+            --latest
