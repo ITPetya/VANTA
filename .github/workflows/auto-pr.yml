@@ -1,0 +1,48 @@
+name: Pull Request automatisch erstellen
+
+# Sobald Claude einen Branch für ein Issue pusht (claude/issue-<nummer>-...),
+# wird automatisch ein Pull Request erstellt, der das Issue beim Mergen schließt.
+# Existiert schon ein Pull Request für den Branch, passiert nichts.
+#
+# Voraussetzung: Settings > Actions > General > Workflow permissions >
+# "Allow GitHub Actions to create and approve pull requests" ist aktiviert.
+
+on:
+  push:
+    branches:
+      - "claude/issue-*"
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: read
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull Request erstellen
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          ISSUE=$(printf '%s' "$BRANCH" | sed -nE 's#^claude/issue-([0-9]+)-.*#\1#p')
+          if [ -z "$ISSUE" ]; then
+            echo "Keine Issue-Nummer im Branch-Namen gefunden, nichts zu tun."
+            exit 0
+          fi
+
+          EXISTING=$(gh pr list --repo "$REPO" --head "$BRANCH" --state all --json number --jq 'length')
+          if [ "$EXISTING" != "0" ]; then
+            echo "Für $BRANCH gibt es bereits einen Pull Request."
+            exit 0
+          fi
+
+          TITLE=$(gh issue view "$ISSUE" --repo "$REPO" --json title --jq '.title')
+
+          BODY=$(printf 'Closes #%s\n\nAutomatisch erstellt für den Branch `%s`.\nDie Zusammenfassung von Claude steht im Issue #%s.\n\n**Erst mergen, wenn Claude im Issue fertig gemeldet hat und die CI grün ist.**\n' "$ISSUE" "$BRANCH" "$ISSUE")
+
+          gh pr create --repo "$REPO" --base main --head "$BRANCH" --title "$TITLE" --body "$BODY"
