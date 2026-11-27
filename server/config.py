@@ -28,6 +28,29 @@ class Settings(BaseSettings):
     vanta_key_level2_path: Path | None = None
     vanta_key_level3_path: Path | None = None
 
+    # Self monitoring. The backup job touches this file after each successful backup.
+    vanta_backup_marker_path: Path | None = None
+    # Uptime Kuma push URLs (secret tokens inside). Empty means no push for that source.
+    kuma_push_ingest_health: SecretStr | None = None
+    kuma_push_ingest_mail: SecretStr | None = None
+    kuma_push_ingest_calendar: SecretStr | None = None
+    kuma_push_ingest_news: SecretStr | None = None
+
+    @property
+    def kuma_push_urls(self) -> dict[str, str]:
+        """Push URL per source key; only sources with a configured URL appear."""
+        candidates = {
+            "health": self.kuma_push_ingest_health,
+            "mail": self.kuma_push_ingest_mail,
+            "calendar": self.kuma_push_ingest_calendar,
+            "news": self.kuma_push_ingest_news,
+        }
+        return {
+            key: value.get_secret_value()
+            for key, value in candidates.items()
+            if value is not None and value.get_secret_value()
+        }
+
     @property
     def database_url(self) -> str:
         """Async SQLAlchemy URL for the application and migrations."""
