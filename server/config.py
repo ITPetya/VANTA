@@ -1,6 +1,7 @@
 """Server configuration, read from environment variables (.env)."""
 
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -21,6 +22,11 @@ class Settings(BaseSettings):
     postgres_user: str = "vanta"
     # No default on purpose: the server must not start with an empty password.
     postgres_password: SecretStr = Field(min_length=1)
+
+    # Paths to key files (never the keys themselves). Checked when a key is first needed,
+    # so the server can start without keys as long as no level 2 or 3 data is handled.
+    vanta_key_level2_path: Path | None = None
+    vanta_key_level3_path: Path | None = None
 
     @property
     def database_url(self) -> str:

@@ -251,7 +251,7 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 - [x] Docker Compose mit PostgreSQL, TimescaleDB, pgvector
 - [x] Datenmodell Version 1: Rohdaten, Zeitreihen, Feedback, Protokoll, Nutzer-ID überall
 - [x] Warteschlange und Fehlerwarteschlange
-- [ ] Verschlüsselung nach Stufen, Schlüsselverwaltung
+- [x] Verschlüsselung nach Stufen, Schlüsselverwaltung
 - [ ] Backup eingerichtet und Wiederherstellung getestet
 - [ ] Status-Endpunkt (Quellen online/offline, letzter Sync, Warteschlange, letztes Backup)
 - [ ] Uptime Kuma überwacht VANTA von außen

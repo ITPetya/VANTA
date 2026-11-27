@@ -107,7 +107,8 @@ class RawItem(Base):
     # SHA-256 of the unchanged payload.
     content_hash: Mapped[bytes] = mapped_column(LargeBinary)
     content_type: Mapped[str] = mapped_column(String(100))
-    # Unchanged payload. Encryption for levels 2 and 3 follows with the key management issue.
+    # Unchanged payload. Levels 2 and 3 are encrypted via server/crypto.py
+    # (wiring follows with the connectors).
     payload: Mapped[bytes] = mapped_column(LargeBinary)
 
 
