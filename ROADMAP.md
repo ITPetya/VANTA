@@ -253,7 +253,7 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 - [x] Warteschlange und Fehlerwarteschlange
 - [x] Verschlüsselung nach Stufen, Schlüsselverwaltung
 - [ ] Backup eingerichtet und Wiederherstellung getestet
-- [ ] Status-Endpunkt (Quellen online/offline, letzter Sync, Warteschlange, letztes Backup)
+- [x] Status-Endpunkt (Quellen online/offline, letzter Sync, Warteschlange, letztes Backup)
 - [ ] Uptime Kuma überwacht VANTA von außen
 
 **Fertig, wenn:** Testdaten eingespeist, gespeichert, verarbeitet und aus dem Backup wiederhergestellt werden können.
