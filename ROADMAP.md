@@ -265,8 +265,8 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 - [ ] Öffentliche Schnittstelle über Cloudflare Tunnel mit Gateway, Allowlist und Schemas
 - [ ] Geräte-Authentifizierung mit Schlüssel aus der Secure Enclave, Registrierung über Tailscale
 - [ ] SwiftUI-App mit Statusanzeige (Online/Offline, letzter Sync)
-- [ ] Zwischenspeicher in der App: nichts geht verloren, wenn der Server nicht erreichbar ist
-- [ ] HealthKit-Anbindung mit Hintergrundzustellung
+- [ ] Zwischenspeicher in der App: nichts geht verloren, wenn der Server nicht erreichbar ist (Gesundheitsdaten lokal gepuffert, Upload steht aus)
+- [x] HealthKit-Anbindung mit Hintergrundzustellung (lokal, Test über SideStore auf dem Gerät steht aus)
 - [ ] Lokale Benachrichtigungen: planbare Meldungen werden vorab terminiert
 - [ ] Feedback-Erfassung für eigene Meldungen (zugestellt, geöffnet, weggewischt, Reaktionszeit)
 - [ ] Erste Trendlogik: persönlicher Normalwert und Abweichung für Schlaf und Stress

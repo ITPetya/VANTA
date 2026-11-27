@@ -40,3 +40,24 @@ SideStore erneuert außerdem die Signatur automatisch im Hintergrund, bevor sie 
 - Die Adresse `releases/latest/download/...` zeigt immer auf das neueste Release. Spätere Releases für andere Teile von VANTA (z. B. Server) müssen deshalb mit `--latest=false` erstellt werden, sonst findet SideStore die Quelle nicht mehr.
 - Die .ipa ist öffentlich herunterladbar. Das ist unkritisch, da sie keine Zugangsdaten enthält. Die Serveradresse wird erst in der App eingetragen.
 - Alternativ lässt sich eine .ipa weiterhin manuell installieren: Artefakt `VANTA-ipa` aus dem Workflow-Lauf herunterladen, entpacken und in SideStore über "+" auswählen.
+
+## HealthKit und Entitlements
+
+Die App liest Schlaf, Herzfrequenz, HRV, Ruhepuls, Gewicht und Schritte aus HealthKit (nur Lesezugriff, es wird nichts geschrieben). Neue Werte landen mit eindeutiger ID und Status "nicht hochgeladen" in einem lokalen SwiftData-Zwischenspeicher. Es gibt noch keine Serververbindung. Doppelte Werte werden über die HealthKit-UUID erkannt, der Lesestand (Anchor) wird erst nach dem Speichern weitergesetzt.
+
+Die App ist für einen kostenlosen Apple-Account (Personal Team, Signatur über SideStore) ausgelegt. Datei: `app/VANTA/VANTA.entitlements`.
+
+| Entitlement | Zweck | Kostenloser Account |
+|---|---|---|
+| `com.apple.developer.healthkit` | HealthKit lesen | verfügbar |
+| `com.apple.developer.healthkit.background-delivery` | Hintergrundzustellung neuer Werte | **ungetestet**, siehe unten |
+
+Nicht verwendet (erfordern bezahlten Account): Push Notifications, Family Controls, App Groups, iCloud, Associated Domains.
+
+Nutzungstext: `NSHealthShareUsageDescription` (in `project.yml`). Es ist keine Hintergrundmodus-Angabe (`UIBackgroundModes`) nötig.
+
+### Offener Test über SideStore
+
+Ob HealthKit und besonders die Hintergrundzustellung mit der SideStore-Signatur funktionieren, ist der Zweck dieses Schritts und wurde noch nicht auf einem Gerät geprüft (Build nur über GitHub Actions). Falls die Installation wegen des Eintrags `healthkit.background-delivery` scheitert, diesen Eintrag aus der Entitlements-Datei entfernen. Die App läuft dann weiter, Werte kommen aber nur bei geöffneter App an (die Statusanzeige zeigt dann einen Fehler bei der Hintergrundzustellung).
+
+Hinweis: iOS verrät nicht, ob ein Lesezugriff abgelehnt wurde. Die App erkennt nur "noch nicht angefragt". Bei dauerhaft leeren Werten Zugriff unter Einstellungen > Gesundheit > Datenzugriff prüfen.

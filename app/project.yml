@@ -25,4 +25,6 @@ targets:
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "1"
         SWIFT_VERSION: "5.0"
+        CODE_SIGN_ENTITLEMENTS: VANTA/VANTA.entitlements
+        INFOPLIST_KEY_NSHealthShareUsageDescription: "VANTA liest Schlaf, Herzfrequenz, HRV, Ruhepuls, Gewicht und Schritte, um sie lokal zu speichern. Es wird nichts geschrieben."
         TARGETED_DEVICE_FAMILY: "1"

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct StatusView: View {
+    @ObservedObject var health: HealthKitManager
     @AppStorage(SettingsKey.serverURL) private var serverURL = ""
     @State private var status = SyncStatus.sample
     @State private var showSettings = false
@@ -26,6 +27,7 @@ struct StatusView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                HealthSection(manager: health)
                 Section {
                     Text("Beispieldaten: noch keine Verbindung zum Server.")
                         .font(.footnote)
