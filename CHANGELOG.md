@@ -10,7 +10,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Ve
 - App-Build veröffentlicht bei jedem Merge auf main ein Release mit .ipa und SideStore-Quelle (source.json), Updates direkt in SideStore; Test für den Quellen-Generator
 - Verschlüsselung nach Sensibilitätsstufen (server/crypto.py): Stufe 1 unverschlüsselt, Stufe 2 und 3 mit AES-256-GCM und getrennten Schlüsseldateien, Schlüsselversion im Wert gespeichert, Schlüssel pro Nutzer abgeleitet, klare Fehlermeldung bei fehlendem Schlüssel, Anleitung in docs/VERSCHLUESSELUNG.md; neue Abhängigkeit cryptography
 - CI: Datenbank-Service (TimescaleDB) für die Datenbanktests, Lauf auch bei Pushes auf Claude-Branches
-- Workflow, der für Claude-Branches automatisch einen Pull Request erstellt
+- Workflow, der für Claude-Branches automatisch einen Pull Request erstellt; läuft nach jedem Lauf von Claude Code und startet die Prüfungen per workflow_dispatch, weil Claudes Commits selbst keine Workflows auslösen
 - Projektkonzept und Projektleitfaden (ROADMAP.md)
 - README.md, SECURITY.md, CHANGELOG.md
 - .gitignore und .env.example
