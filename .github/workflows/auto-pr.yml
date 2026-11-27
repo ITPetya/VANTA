@@ -1,48 +1,73 @@
 name: Pull Request automatisch erstellen
 
-# Sobald Claude einen Branch für ein Issue pusht (claude/issue-<nummer>-...),
-# wird automatisch ein Pull Request erstellt, der das Issue beim Mergen schließt.
-# Existiert schon ein Pull Request für den Branch, passiert nichts.
+# Claude in GitHub committet mit dem GITHUB_TOKEN. Solche Pushes lösen keine
+# Workflows aus. Deshalb läuft dieser Workflow, sobald ein Lauf von "Claude Code"
+# fertig ist, und kümmert sich um alle Branches claude/issue-<nummer>-...:
+#
+# 1. Gibt es noch keinen Pull Request, wird einer mit "Closes #<nummer>" erstellt.
+# 2. Für jeden offenen Pull Request eines Claude-Branches, dessen neuester Commit
+#    noch nicht geprüft wurde, werden CI (und bei App-Änderungen der App-Build)
+#    per workflow_dispatch gestartet. Die Ergebnisse erscheinen im Pull Request.
 #
 # Voraussetzung: Settings > Actions > General > Workflow permissions >
 # "Allow GitHub Actions to create and approve pull requests" ist aktiviert.
 
 on:
-  push:
-    branches:
-      - "claude/issue-*"
+  workflow_run:
+    workflows: ["Claude Code"]
+    types: [completed]
+  workflow_dispatch:
 
 permissions:
   contents: read
   pull-requests: write
   issues: read
+  actions: write
+  checks: read
+
+concurrency:
+  group: auto-pr
+  cancel-in-progress: false
 
 jobs:
   create-pr:
     runs-on: ubuntu-latest
     steps:
-      - name: Pull Request erstellen
+      - name: Pull Requests erstellen und Prüfungen starten
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: ${{ github.ref_name }}
           REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
 
-          ISSUE=$(printf '%s' "$BRANCH" | sed -nE 's#^claude/issue-([0-9]+)-.*#\1#p')
-          if [ -z "$ISSUE" ]; then
-            echo "Keine Issue-Nummer im Branch-Namen gefunden, nichts zu tun."
-            exit 0
-          fi
+          BRANCHES=$(gh api "repos/$REPO/branches?per_page=100" --paginate --jq '.[].name' | grep -E '^claude/issue-[0-9]+-' || true)
 
-          EXISTING=$(gh pr list --repo "$REPO" --head "$BRANCH" --state all --json number --jq 'length')
-          if [ "$EXISTING" != "0" ]; then
-            echo "Für $BRANCH gibt es bereits einen Pull Request."
-            exit 0
-          fi
+          for BRANCH in $BRANCHES; do
+            ISSUE=$(printf '%s' "$BRANCH" | sed -nE 's#^claude/issue-([0-9]+)-.*#\1#p')
+            [ -n "$ISSUE" ] || continue
 
-          TITLE=$(gh issue view "$ISSUE" --repo "$REPO" --json title --jq '.title')
+            # Branches ohne eigene Commits gegenüber main überspringen.
+            AHEAD=$(gh api "repos/$REPO/compare/main...$BRANCH" --jq '.ahead_by')
+            [ "$AHEAD" != "0" ] || continue
 
-          BODY=$(printf 'Closes #%s\n\nAutomatisch erstellt für den Branch `%s`.\nDie Zusammenfassung von Claude steht im Issue #%s.\n\n**Erst mergen, wenn Claude im Issue fertig gemeldet hat und die CI grün ist.**\n' "$ISSUE" "$BRANCH" "$ISSUE")
+            COUNT=$(gh pr list --repo "$REPO" --head "$BRANCH" --state all --json number --jq 'length')
+            if [ "$COUNT" = "0" ]; then
+              TITLE=$(gh issue view "$ISSUE" --repo "$REPO" --json title --jq '.title')
+              BODY=$(printf 'Closes #%s\n\nAutomatisch erstellt für den Branch `%s`.\nDie Zusammenfassung von Claude steht im Issue #%s.\n\n**Erst mergen, wenn die Prüfungen grün sind.**\n' "$ISSUE" "$BRANCH" "$ISSUE")
+              gh pr create --repo "$REPO" --base main --head "$BRANCH" --title "$TITLE" --body "$BODY"
+            fi
 
-          gh pr create --repo "$REPO" --base main --head "$BRANCH" --title "$TITLE" --body "$BODY"
+            STATE=$(gh pr list --repo "$REPO" --head "$BRANCH" --state open --json number --jq 'length')
+            [ "$STATE" != "0" ] || continue
+
+            SHA=$(gh api "repos/$REPO/branches/$BRANCH" --jq '.commit.sha')
+            CHECKED=$(gh api "repos/$REPO/commits/$SHA/check-runs" --jq '[.check_runs[] | select(.name=="checks")] | length')
+            if [ "$CHECKED" = "0" ]; then
+              echo "Starte CI für $BRANCH ($SHA)"
+              gh workflow run ci.yml --repo "$REPO" --ref "$BRANCH"
+              if gh api "repos/$REPO/compare/main...$BRANCH" --jq '.files[].filename' | grep -q '^app/'; then
+                echo "Starte App-Build für $BRANCH"
+                gh workflow run app-build.yml --repo "$REPO" --ref "$BRANCH"
+              fi
+            fi
+          done

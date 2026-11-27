@@ -74,7 +74,8 @@ Abweichungen von dieser Struktur im Pull Request begründen.
 
 ## Qualität
 
-- Vor jedem Pull Request: `ruff check`, `ruff format --check`, `mypy` und `pytest` müssen fehlerfrei laufen.
+- Vor jedem Pull Request: `ruff check .`, `ruff format --check .`, `mypy` und `pytest` müssen für das **gesamte Projekt** fehlerfrei laufen, nicht nur für geänderte Dateien. Melde nur dann "fehlerfrei", wenn alle vier wirklich gelaufen sind, sonst nenne, was nicht lief.
+- Vor dem Start einer Aufgabe den aktuellen Stand von `main` verwenden.
 - Neue Logik bekommt Tests. Besonders wichtig: Schemas der Schnittstelle (auch abgelehnte Eingaben testen), Idempotenz, Erkennung ausbleibender Sensoren.
 - Docstrings und Kommentare dort, wo das Warum nicht offensichtlich ist.
 

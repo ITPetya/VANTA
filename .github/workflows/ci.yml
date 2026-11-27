@@ -1,14 +1,15 @@
 name: CI
 
-# Läuft bei jedem Pull Request und zusätzlich bei Pushes auf Claude-Branches.
-# Der Push-Auslöser ist nötig, weil Pull Requests, die automatisch per
-# GITHUB_TOKEN erstellt werden, keine weiteren Workflows auslösen.
+# Läuft bei jedem Pull Request, bei Pushes auf Claude-Branches und manuell.
+# Commits von Claude in GitHub entstehen mit dem GITHUB_TOKEN und lösen selbst
+# keine Workflows aus. Deshalb startet auto-pr.yml die CI per workflow_dispatch.
 
 on:
   pull_request:
   push:
     branches:
       - "claude/**"
+  workflow_dispatch:
 
 permissions:
   contents: read
