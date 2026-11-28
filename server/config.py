@@ -28,6 +28,12 @@ class Settings(BaseSettings):
     vanta_key_level2_path: Path | None = None
     vanta_key_level3_path: Path | None = None
 
+    # Device authentication (see docs/SIGNATUR.md).
+    # Allowed difference between the request timestamp and the server clock.
+    vanta_auth_tolerance_seconds: int = Field(default=60, ge=1, le=600)
+    # Lifetime of a one-time registration code.
+    vanta_registration_code_ttl_seconds: int = Field(default=600, ge=60, le=86400)
+
     # Self monitoring. The backup job touches this file after each successful backup.
     vanta_backup_marker_path: Path | None = None
 

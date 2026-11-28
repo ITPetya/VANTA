@@ -263,7 +263,7 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 - [x] GitHub-Actions-Workflow baut (Vorlage in docs/, ungetestet) die App auf einem macOS-Runner als unsignierte .ipa
 - [ ] Installation und automatische Neusignierung über SideStore
 - [ ] Öffentliche Schnittstelle über Cloudflare Tunnel mit Gateway, Allowlist und Schemas
-- [ ] Geräte-Authentifizierung mit Schlüssel aus der Secure Enclave, Registrierung über Tailscale
+- [ ] Geräte-Authentifizierung mit Schlüssel aus der Secure Enclave, Registrierung über Tailscale (Server-Seite erledigt, siehe docs/SIGNATUR.md; App-Seite steht aus)
 - [ ] SwiftUI-App mit Statusanzeige (Online/Offline, letzter Sync)
 - [ ] Zwischenspeicher in der App: nichts geht verloren, wenn der Server nicht erreichbar ist (Gesundheitsdaten lokal gepuffert, Upload steht aus)
 - [x] HealthKit-Anbindung mit Hintergrundzustellung (lokal, Test über SideStore auf dem Gerät steht aus)
