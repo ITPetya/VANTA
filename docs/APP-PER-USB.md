@@ -15,7 +15,7 @@ Die Zugangsdaten liegen danach auf dem Server. Deshalb besser eine **zweite, kos
 ### 2. Pakete für die USB-Verbindung
 
 ```bash
-sudo apt install -y usbmuxd libimobiledevice-utils libfuse2t64
+sudo apt install -y usbmuxd libimobiledevice-utils fuse3
 ```
 
 ### 3. xtool installieren
