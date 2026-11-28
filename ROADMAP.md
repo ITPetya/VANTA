@@ -241,26 +241,28 @@ Jeder Meilenstein endet mit einem lauffähigen, nutzbaren Stand.
 
 ### M0: Grundlagen
 
-- [ ] Öffentliches Repository mit LICENSE (AGPL-3.0), Secret Scanning und Push Protection
-- [ ] Commit-E-Mail auf GitHub-Noreply-Adresse gestellt
+- [x] Öffentliches Repository mit LICENSE (AGPL-3.0), Secret Scanning und Push Protection
+- [x] Commit-E-Mail auf GitHub-Noreply-Adresse gestellt
 - [x] Pre-Commit-Check auf Schlüssel (gitleaks, `.pre-commit-config.yaml`)
 - [x] Repository-Struktur (Server, App, Doku, config.example)
-- [ ] Mini-PC mit Debian minimal, SSH nur mit Schlüssel, automatische Sicherheitsupdates
-- [ ] Tailscale für die Verwaltung
-- [ ] Netzsegment bzw. Firewall: kein Zugriff vom VANTA-Server ins Heimnetz
+- [x] Mini-PC mit Debian minimal, SSH nur mit Schlüssel, automatische Sicherheitsupdates
+- [x] Tailscale für die Verwaltung
+- [x] Firewall für eingehende Verbindungen (nur SSH aus dem Heimnetz und Tailscale)
+- Sperre vom VANTA-Server ins Heimnetz: verschoben nach M1, zusammen mit der öffentlichen Schnittstelle
 - [x] Docker Compose mit PostgreSQL, TimescaleDB, pgvector
 - [x] Datenmodell Version 1: Rohdaten, Zeitreihen, Feedback, Protokoll, Nutzer-ID überall
 - [x] Warteschlange und Fehlerwarteschlange
 - [x] Verschlüsselung nach Stufen, Schlüsselverwaltung
-- [ ] Backup eingerichtet und Wiederherstellung getestet
+- [x] Backup eingerichtet und Wiederherstellung getestet (erster Test am 28.11.2026)
 - [x] Status-Endpunkt (Quellen online/offline, letzter Sync, Warteschlange, letztes Backup)
-- [ ] Uptime Kuma überwacht VANTA von außen
+- [x] Uptime Kuma überwacht VANTA von außen
 
 **Fertig, wenn:** Testdaten eingespeist, gespeichert, verarbeitet und aus dem Backup wiederhergestellt werden können.
 
 ### M1: App-Grundgerüst und Gesundheitsdaten
 
 - [x] GitHub-Actions-Workflow baut (Vorlage in docs/, ungetestet) die App auf einem macOS-Runner als unsignierte .ipa
+- [ ] Netzsegment (VLAN) bzw. Firewall: kein Zugriff vom VANTA-Server ins Heimnetz
 - [ ] Installation und automatische Neusignierung über SideStore
 - [ ] Öffentliche Schnittstelle über Cloudflare Tunnel mit Gateway, Allowlist und Schemas
 - [ ] Geräte-Authentifizierung mit Schlüssel aus der Secure Enclave, Registrierung über Tailscale (Server-Seite erledigt, siehe docs/SIGNATUR.md; App-Seite steht aus)
