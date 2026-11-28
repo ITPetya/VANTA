@@ -6,6 +6,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Ve
 ## [Unveröffentlicht]
 
 ### Hinzugefügt
+- docs/SERVER-SETUP.md: Einrichtung des Servers von der Debian-Installation bis zu Backup und Überwachung
+- Docker Compose: Dienst `migrate` bringt das Schema vor dem Start der API automatisch auf den neuesten Stand; Schlüssel und Backup-Ordner werden in die API eingebunden; Container-Benutzer mit fester ID 10001
 - App: lokale Benachrichtigungen (kein Apple Push) mit Berechtigungsanfrage, Testbriefing mit den letzten HealthKit-Werten zu Startzeiten 07:00, 12:30 und 21:00 (in den Einstellungen änderbar, 7 Tage vorab terminiert), Ruhezeiten (Startwert 22:00 bis 06:30), Feedback-Erfassung (zugestellt, geöffnet mit Zeit bis zum Öffnen, weggewischt über customDismissAction) im lokalen Zwischenspeicher mit eindeutiger ID und Status "nicht hochgeladen", Ansicht der letzten Feedback-Einträge
 - App: HealthKit lesen (Schlaf, Herzfrequenz, HRV, Ruhepuls, Gewicht, Schritte, nur Lesezugriff) mit Hintergrundzustellung, lokaler SwiftData-Zwischenspeicher mit eindeutiger ID und Status "nicht hochgeladen", Ansicht mit letzten Werten, Anzahl im Zwischenspeicher, letzter Hintergrundzustellung und Hinweis bei fehlender Berechtigung; Entitlements in docs/APP.md
 - Backup (server/backup): verschlüsselter Datenbank-Dump (AES-256 über openssl, Passphrase aus Schlüsseldatei), atomares Schreiben, Aufbewahrungsregel (neueste N), Meldung des Erfolgs über die Marker-Datei an die Selbstüberwachung (bei Fehler weder Meldung noch Löschen alter Backups), Entschlüsselung per `python -m server.backup decrypt`, neue Einstellungen in .env.example, Anleitung zur Wiederherstellung in docs/BACKUP.md und Tests

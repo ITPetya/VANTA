@@ -1,6 +1,6 @@
 # Lokale Einrichtung
 
-Kurze Anleitung, um den VANTA-Server lokal zu starten.
+Kurze Anleitung, um den VANTA-Server lokal zum Entwickeln zu starten. Die Einrichtung des echten Servers (Debian, Tailscale, Docker, Backup) steht in [SERVER-SETUP.md](SERVER-SETUP.md).
 
 ## Voraussetzungen
 
@@ -50,28 +50,13 @@ uvicorn server.api.main:app --reload
 
 ## Datenbankmigrationen
 
-Die Migrationen liegen in `server/db/migrations/`. Läuft die Datenbank im Docker-Netz, muss sie
-für Migrationen vom Host aus erreichbar sein. Dafür `POSTGRES_HOST` in der `.env` passend setzen
-(außerhalb von Docker z. B. `localhost`) und die Datenbank vorübergehend lokal freigeben. Im
-Betrieb bleibt der Datenbankport unveröffentlicht.
+Beim Start mit Docker Compose bringt der einmalige Dienst `migrate` das Schema automatisch auf den neuesten Stand (`alembic upgrade head`). Die API startet erst danach.
+
+Neue Migration anlegen (in der Entwicklungsumgebung):
 
 ```bash
-alembic -c server/db/alembic.ini upgrade head
 alembic -c server/db/alembic.ini revision -m "kurze beschreibung"
 ```
-
-Die erste Migration ist bewusst leer. Das Datenmodell folgt mit dem nächsten Issue.
-
-## CI-Workflow aktivieren
-
-Claude darf keine Dateien unter `.github/workflows/` ändern. Die Vorlage liegt deshalb in
-`docs/ci-workflow.yml` und muss einmalig manuell übernommen werden:
-
-```bash
-cp docs/ci-workflow.yml .github/workflows/ci.yml
-```
-
-Danach führt jeder Pull Request ruff, mypy und pytest aus.
 
 ## Datenbanktests
 
