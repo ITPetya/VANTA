@@ -11,6 +11,7 @@ from typing import Any
 
 from sqlalchemy import (
     BigInteger,
+    Boolean,
     CheckConstraint,
     DateTime,
     Float,
@@ -225,3 +226,69 @@ class JobFailure(Base):
     attempt: Mapped[int] = mapped_column(Integer)
     error: Mapped[str] = mapped_column(Text)
     failed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=_now())
+
+
+class Device(Base):
+    """A registered device (the app). Requests are verified against ``public_key``."""
+
+    __tablename__ = "devices"
+    __table_args__ = (
+        UniqueConstraint("user_id", "id"),  # target of composite foreign keys
+        UniqueConstraint("user_id", "public_key"),
+        CheckConstraint("octet_length(public_key) = 65", name="public_key_length"),
+    )
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    name: Mapped[str] = mapped_column(String(100))
+    # ECDSA P-256 public key, X9.62 uncompressed point (0x04 || X || Y), 65 bytes.
+    public_key: Mapped[bytes] = mapped_column(LargeBinary)
+    registered_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=_now())
+    last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    revoked: Mapped[bool] = mapped_column(Boolean, server_default=text("false"))
+
+
+class RegistrationCode(Base):
+    """One-time code that allows exactly one device registration. Only the hash is stored."""
+
+    __tablename__ = "registration_codes"
+    __table_args__ = (UniqueConstraint("code_hash"),)
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    code_hash: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=_now())
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class RequestNonce(Base):
+    """Nonces of accepted requests. A repeated nonce is a replay."""
+
+    __tablename__ = "request_nonces"
+    __table_args__ = (
+        ForeignKeyConstraint(["user_id", "device_id"], ["devices.user_id", "devices.id"]),
+        Index("ix_request_nonces_seen_at", "seen_at"),
+    )
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    device_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    nonce: Mapped[str] = mapped_column(String(32), primary_key=True)
+    seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=_now())
+
+
+class RejectedRequest(Base):
+    """Log of rejected requests (shown in the app status). Never stores request content."""
+
+    __tablename__ = "rejected_requests"
+    __table_args__ = (Index("ix_rejected_requests_rejected_at", "rejected_at"),)
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    # Unknown devices cannot be assigned to a user, so the user is the configured single
+    # user in that case. Every row still carries a user_id.
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    device_id: Mapped[int | None] = mapped_column(BigInteger)
+    reason: Mapped[str] = mapped_column(String(50))
+    method: Mapped[str] = mapped_column(String(16))
+    path: Mapped[str] = mapped_column(String(200))
+    rejected_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=_now())

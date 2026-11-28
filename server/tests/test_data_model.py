@@ -48,6 +48,10 @@ def test_expected_tables_exist() -> None:
         "action_log",
         "queue_jobs",
         "job_failures",
+        "devices",
+        "registration_codes",
+        "request_nonces",
+        "rejected_requests",
     }
 
 

@@ -6,6 +6,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Ve
 ## [Unveröffentlicht]
 
 ### Hinzugefügt
+- Geräte-Authentifizierung (Server): Tabellen `devices`, `registration_codes`, `request_nonces` und `rejected_requests` (Migration 0004), Registrierung nur über den internen Endpunkt `/internal/devices/register` mit einmaligem Code (nur als Hash gespeichert, per `python -m server.api.devices_cli create-code` erzeugt, dort auch `list` und `revoke`), Prüfung signierter Anfragen (ECDSA P-256 über Methode, Pfad, Zeitstempel, Nonce und Hash des Inhalts) als Abhängigkeit `require_device`, Schutz vor Wiederholung durch Zeitfenster und gespeicherte Nonces, Protokoll abgelehnter Anfragen, Test-Endpunkt `GET /v1/ping`, Format in docs/SIGNATUR.md, neue Einstellungen in .env.example und Tests; Abweichung von der Projektstruktur: Dateien liegen in `server/api/`, weil keine eigene Schicht nötig ist
 - M0 abgeschlossen: Server auf dem Mini-PC eingerichtet, Backup und erste Wiederherstellung erfolgreich getestet
 - docs/SERVER-SETUP.md: Einrichtung des Servers von der Debian-Installation bis zu Backup und Überwachung
 - Docker Compose: Dienst `migrate` bringt das Schema vor dem Start der API automatisch auf den neuesten Stand; Schlüssel und Backup-Ordner werden in die API eingebunden; Container-Benutzer mit fester ID 10001
