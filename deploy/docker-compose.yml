@@ -20,17 +20,44 @@ services:
       timeout: 5s
       retries: 5
 
+  # One-shot job: brings the database schema up to date before the API starts.
+  migrate:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: vanta-server:local
+    restart: "no"
+    env_file: ../.env
+    environment:
+      POSTGRES_HOST: db
+    command: ["python", "-m", "alembic", "-c", "server/db/alembic.ini", "upgrade", "head"]
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - internal
+
   api:
     build:
       context: ..
       dockerfile: deploy/Dockerfile
+    image: vanta-server:local
     restart: unless-stopped
     env_file: ../.env
     environment:
       POSTGRES_HOST: db
+      # Inside the container the backup folder is mounted at /backups (read only).
+      VANTA_BACKUP_MARKER_PATH: /backups/last_backup
+    volumes:
+      # Encryption keys (secrets/ next to .env, never in the repository).
+      - ../secrets:/run/secrets:ro
+      # Backup folder, only to read the marker of the last successful backup.
+      - ${VANTA_BACKUP_DIR:-../backups}:/backups:ro
     depends_on:
       db:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     networks:
       - internal
     # Internal endpoints are only reachable from the host itself.
