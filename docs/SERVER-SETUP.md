@@ -106,7 +106,19 @@ sudo systemctl reload ssh
 
 ### 7. Firewall
 
-Eingehend nur SSH aus dem Heimnetz und alles über Tailscale. `<heimnetz>` ist z. B. `192.168.178.0/24` (FRITZ!Box) oder `192.168.0.0/24`, siehe Ausgabe von `ip -br a`.
+Eingehend nur SSH aus dem Heimnetz und alles über Tailscale.
+
+**Zuerst Tailscale (Schritt 5) einrichten und prüfen, dass die Verbindung über die Tailscale-IP klappt.** Das ist der Rettungsweg, falls die Regel fürs Heimnetz nicht stimmt.
+
+`<heimnetz>` aus der Ausgabe von `ip -br a` ableiten: Zeile der Netzwerkkarte (`eno1`, `enp...`), Adresse mit Präfix, Host-Teil durch Nullen ersetzen. Beispiele:
+
+| Ausgabe von `ip -br a` | `<heimnetz>` |
+|---|---|
+| `192.168.178.45/24` | `192.168.178.0/24` |
+| `192.168.0.12/24` | `192.168.0.0/24` |
+| `172.16.200.27/16` | `172.16.0.0/16` |
+
+Eine bestehende SSH-Sitzung bleibt nach `ufw enable` offen, auch wenn die Regel falsch ist. Deshalb danach **eine neue Verbindung über das Heimnetz testen**, bevor du weitermachst.
 
 ```bash
 sudo ufw default deny incoming
@@ -170,11 +182,15 @@ Logs der Container begrenzen:
 sudo tee /etc/docker/daemon.json >/dev/null <<'EOF'
 {
   "log-driver": "local",
-  "log-opts": { "max-size": "10m", "max-file": "3" }
+  "log-opts": { "max-size": "10m", "max-file": "3" },
+  "bip": "10.211.0.1/24",
+  "default-address-pools": [ { "base": "10.210.0.0/16", "size": 24 } ]
 }
 EOF
 sudo systemctl restart docker
 ```
+
+`bip` und `default-address-pools` legen Dockers interne Netze auf `10.210.x.x` und `10.211.0.x`. Ohne diese Angabe nutzt Docker `172.17.x.x` und höher, was mit Heimnetzen im Bereich `172.16.0.0/12` kollidieren kann. Falls dein Heimnetz selbst in `10.210.x.x` oder `10.211.x.x` liegt, andere Bereiche wählen.
 
 **Einmal ab- und wieder anmelden**, damit die Docker-Gruppe gilt. Test: `docker run --rm hello-world`.
 
